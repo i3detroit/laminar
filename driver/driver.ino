@@ -1,9 +1,18 @@
 // Laminar flow fountain driver
 
 // Output pins
-int pinA = 2;
-int pinB = 3;
-int pinC = 4;
+int onPinA = 2;
+int offPinA = 3;
+int onPinB = 4;
+int offPinB = 5;
+int onPinC = 6;
+int offPinC = 7
+long remainsPinA = 0;
+long remainsPinB = 0;
+long remainsPinC = 0;
+
+// Number of ms to pulse actuator
+long actuatorMs = 120;
 
 // Number of ms water takes to reach another barrel
 int periodA = 1500;
@@ -81,9 +90,12 @@ void setup() {
   pinMode(pinB, OUTPUT);
   pinMode(pinC, OUTPUT);
   pinMode(13, OUTPUT);
-  digitalWrite(pinA, LOW);
-  digitalWrite(pinB, LOW);
-  digitalWrite(pinC, LOW);
+  digitalWrite(onPinA, LOW);
+  digitalWrite(onPinB, LOW);
+  digitalWrite(onPinC, LOW);
+  digitalWrite(offPinA, LOW);
+  digitalWrite(offPinB, LOW);
+  digitalWrite(offPinC, LOW);
   digitalWrite(13, LOW);
   createDemo();
 }
@@ -102,6 +114,8 @@ void loop() {
   long elapsed = curMillis - lastMillis;
   lastMillis = curMillis;
 
+  updateActuators(elapsed);
+
   // Update A state
   long toAdvance = elapsed;
   while (toAdvance > 0) {
@@ -114,6 +128,7 @@ void loop() {
         indexA++;
         remainsA = onA[indexA];
         stateA = !stateA;
+        setActuatorA(stateA);
       } else {
         break;
       }
@@ -136,6 +151,7 @@ void loop() {
         indexB++;
         remainsB = onB[indexB];
         stateB = !stateB;
+        setActuatorB(stateB);
       } else {
         break;
       }
@@ -158,6 +174,7 @@ void loop() {
         indexC++;
         remainsC = onC[indexC];
         stateC = !stateC;
+        setActuatorC(stateC);
       } else {
         break;
       }
@@ -167,10 +184,58 @@ void loop() {
       toAdvance = 0;
     }
   }
-  // Set output state
-  digitalWrite(pinA, stateA ? HIGH : LOW);
-  digitalWrite(pinB, stateB ? HIGH : LOW);
-  digitalWrite(pinC, stateC ? HIGH : LOW);
-  digitalWrite(13, stateC ? HIGH : LOW);
 }
 
+void setActuatorA(boolean state) {
+  if (state) {
+    digitalWrite(onPinA, HIGH);
+    digitalWrite(onPinA, LOW);
+    remainsPinA = actuatorMs;
+  } else {
+    digitalWrite(onPinA, LOW);
+    digitalWrite(onPinA, HIGH);
+    remainsPinA = actuatorMs;
+  }
+}
+
+void setActuatorB(boolean state) {
+  if (state) {
+    digitalWrite(onPinB, HIGH);
+    digitalWrite(onPinB, LOW);
+    remainsPinA = actuatorMs;
+  } else {
+    digitalWrite(onPinB, LOW);
+    digitalWrite(onPinB, HIGH);
+    remainsPinA = actuatorMs;
+  }
+}
+
+void setActuatorC(boolean state) {
+  if (state) {
+    digitalWrite(onPinC, HIGH);
+    digitalWrite(onPinC, LOW);
+    remainsPinA = actuatorMs;
+  } else {
+    digitalWrite(onPinC, LOW);
+    digitalWrite(onPinC, HIGH);
+    remainsPinA = actuatorMs;
+  }
+}
+
+void updateActuators(long elapsed) {
+  if (remainsPinA < elapsed) {
+    digitalWrite(onPinA, LOW);
+    digitalWrite(offPinA, LOW);
+  }
+  if (remainsPinB < elapsed) {
+    digitalWrite(onPinB, LOW);
+    digitalWrite(offPinB, LOW);
+  }
+  if (remainsPinC < elapsed) {
+    digitalWrite(onPinC, LOW);
+    digitalWrite(offPinC, LOW);
+  }
+  remainsPinA = max(0, remainsPinA - elapsed);
+  remainsPinB = max(0, remainsPinB - elapsed);
+  remainsPinC = max(0, remainsPinC - elapsed);
+}
