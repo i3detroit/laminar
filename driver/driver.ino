@@ -6,7 +6,7 @@ int offPinA = 3;
 int onPinB = 4;
 int offPinB = 5;
 int onPinC = 6;
-int offPinC = 7
+int offPinC = 7;
 long remainsPinA = 0;
 long remainsPinB = 0;
 long remainsPinC = 0;
@@ -15,9 +15,9 @@ long remainsPinC = 0;
 long actuatorMs = 120;
 
 // Number of ms water takes to reach another barrel
-int periodA = 1500;
-int periodB = 1500;
-int periodC = 1500;
+int periodA = 1250;
+int periodB = 1250;
+int periodC = 1250;
 
 // Demo pattern and fountain state
 int onA[100];
@@ -86,9 +86,12 @@ void createDemo() {
 }
 
 void setup() {
-  pinMode(pinA, OUTPUT);
-  pinMode(pinB, OUTPUT);
-  pinMode(pinC, OUTPUT);
+  pinMode(onPinA, OUTPUT);
+  pinMode(onPinB, OUTPUT);
+  pinMode(onPinC, OUTPUT);
+  pinMode(offPinA, OUTPUT);
+  pinMode(offPinB, OUTPUT);
+  pinMode(offPinC, OUTPUT);
   pinMode(13, OUTPUT);
   digitalWrite(onPinA, LOW);
   digitalWrite(onPinB, LOW);
@@ -128,6 +131,7 @@ void loop() {
         indexA++;
         remainsA = onA[indexA];
         stateA = !stateA;
+        digitalWrite(13, stateA ? HIGH : LOW);
         setActuatorA(stateA);
       } else {
         break;
@@ -189,11 +193,11 @@ void loop() {
 void setActuatorA(boolean state) {
   if (state) {
     digitalWrite(onPinA, HIGH);
-    digitalWrite(onPinA, LOW);
+    digitalWrite(offPinA, LOW);
     remainsPinA = actuatorMs;
   } else {
     digitalWrite(onPinA, LOW);
-    digitalWrite(onPinA, HIGH);
+    digitalWrite(offPinA, HIGH);
     remainsPinA = actuatorMs;
   }
 }
@@ -201,24 +205,24 @@ void setActuatorA(boolean state) {
 void setActuatorB(boolean state) {
   if (state) {
     digitalWrite(onPinB, HIGH);
-    digitalWrite(onPinB, LOW);
-    remainsPinA = actuatorMs;
+    digitalWrite(offPinB, LOW);
+    remainsPinB = actuatorMs;
   } else {
     digitalWrite(onPinB, LOW);
-    digitalWrite(onPinB, HIGH);
-    remainsPinA = actuatorMs;
+    digitalWrite(offPinB, HIGH);
+    remainsPinB = actuatorMs;
   }
 }
 
 void setActuatorC(boolean state) {
   if (state) {
     digitalWrite(onPinC, HIGH);
-    digitalWrite(onPinC, LOW);
-    remainsPinA = actuatorMs;
+    digitalWrite(offPinC, LOW);
+    remainsPinC = actuatorMs;
   } else {
     digitalWrite(onPinC, LOW);
-    digitalWrite(onPinC, HIGH);
-    remainsPinA = actuatorMs;
+    digitalWrite(offPinC, HIGH);
+    remainsPinC = actuatorMs;
   }
 }
 
